@@ -1,15 +1,26 @@
-const app = require('express')()
-const server = require('http').createServer(app)
-const cors = require('cors')
+import express from 'express'
+import cors from 'cors'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 
-const io = require('socket.io')(server,{
-    cors: {
-        origin: '*',
-        methods: ["GET","POST"]
-    }
+const app = express()
+app.use(cors())
+app.use(express.json())
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+)
+
+const httpServer = createServer(app)
+const io = new Server(httpServer, {
+  cors: {
+    origin: '*',
+  },
+  path: '/kishan/video',
 })
 
-app.use(cors())
+
 
 const PORT = process.env.PORT || 7000
 
@@ -34,7 +45,7 @@ io.on("connection", (socket) => {
   })
 });
 
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`)
 })
 
